@@ -1,4 +1,4 @@
-export const DATABASE_CONNECION = 'DATABASE_CONNECION';
+export const DATABASE_CONNECTION = 'DATABASE_CONNECTION';
 
 export interface DatabaseConnection {
   createConnection(): Promise<any>;

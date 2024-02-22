@@ -23,11 +23,11 @@ export class KnexDatabaseService implements DatabaseConnection {
     });
   }
 
-  async createConnection() {
+  async createConnection(): Promise<Knex> {
     return this.knexConfig;
   }
 
-  async createTransaction() {
+  async createTransaction(): Promise<Knex> {
     return this.knexConfig.transaction();
   }
 
