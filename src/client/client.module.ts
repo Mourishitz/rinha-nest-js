@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { ClientService } from './client.service';
-import { ClientController } from './client.controller';
-import { ClientRepository } from './client.repository';
-import { DATABASE_CONNECTION } from 'src/database/database.interface';
-import { KnexDatabaseService } from 'src/database/knex.service';
+import { ClientService } from '@client/services/client.service';
+import { ClientController } from '@client/controllers/client.controller';
+import { ClientRepository } from '@client/repositories/client.repository';
+import { DATABASE_CONNECTION } from '@database/database.interface';
+import { KnexDatabaseService } from '@database/knex.service';
 
 @Module({
   imports: [],

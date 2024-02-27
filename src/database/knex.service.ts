@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Knex, knex } from 'knex';
-import { DatabaseConnection } from './database.interface';
+import { DatabaseConnection } from '@database/database.interface';
 
 @Injectable()
 export class KnexDatabaseService implements DatabaseConnection {

@@ -1,16 +1,8 @@
-import {
-  HttpException,
-  HttpStatus,
-  Inject,
-  Injectable,
-  Response,
-} from '@nestjs/common';
-import { response } from 'express';
-import knex from 'knex';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import {
   DATABASE_CONNECTION,
   DatabaseConnection,
-} from 'src/database/database.interface';
+} from '@database/database.interface';
 
 @Injectable()
 export class ClientRepository {
@@ -22,7 +14,7 @@ export class ClientRepository {
   public async createTransactionForClient(
     id: number,
     transaction: Transaction.Create,
-  ) {
+  ): Promise<Transaction.Response> {
     const transactionTranslator = {
       c: 'limite',
       d: 'saldo',
@@ -59,7 +51,6 @@ export class ClientRepository {
 
       return client;
     } catch (error) {
-      console.log(error);
       const errorCodes = {
         '23514': new HttpException(
           'Saldo Irregular',
@@ -73,34 +64,27 @@ export class ClientRepository {
 
       throw errorCodes[error.code];
     }
-
-    // const newTransaction = connection
-    // .table('transacoes')
-    // .insert({
-    //   cliente_id: id,
-    //   valor: transaction.valor,
-    //   tipo: transaction.tipo,
-    //   descricao: transaction.descricao,
-    // })
-    //   .table('clientes')
-    //   .decrement(
-    // `${transactionTranslator[transaction.tipo]}`,
-    // transaction.valor,
-    //   )
-    //   .where('id', '=', id)
-    //   .returning(['limite', 'saldo']);
-    //
-    // return await newTransaction;
   }
 
-  public async selectClient(id: number) {
+  async getTransactionsFromClient(id: number): Promise<Transaction.Object[]> {
     const connection = await this.databaseService.createConnection();
-    return connection('clientes').where('id', id);
+    return await connection
+      .table('transacoes')
+      .select(['valor', 'tipo', 'descricao', 'realizada_em'])
+      .where('cliente_id', '=', id);
   }
 
-  // public async transactions() {
-  //   return this.query.leftJoin('transacoes', function() {
-  //     this.on('cliente_id', '=', 'clientes.id');
-  //   });
-  // }
+  async getBalanceFromClient(id: number): Promise<Invoice.BalanceResponse> {
+    const connection = await this.databaseService.createConnection();
+    const [results] = await connection
+      .select(['saldo', 'limite'])
+      .table('clientes')
+      .where('id', '=', id);
+
+    return {
+      total: results['saldo'],
+      data_extrato: new Date().toISOString(),
+      limite: results['limite'],
+    };
+  }
 }
